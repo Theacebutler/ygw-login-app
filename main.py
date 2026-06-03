@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from src.window import app, get_payload
 import customtkinter as ctk
+from tkinter import messagebox
+from urllib import parse
 import requests
 from dotenv import load_dotenv
 
@@ -32,19 +33,59 @@ def login():
             result_label.configure(text="User login Successful")
         else:
             result_label.configure(text=response.text[:100])  # Display first 100 chars
+        app.destroy()
     except Exception as e:
         result_label.configure(text=f"Error: {e}")
         print(e)
 
 
+app = ctk.CTk()
+app.title("YGW Login App")
+app.geometry("400x400")
+app.configure(fg_color="green")
+
+
+def get_data():
+    # escape the username and password
+    username = username_form.get()
+    password = password_form.get()
+    username = parse.quote(str(username))
+    password = parse.quote(str(password))
+    return username, password, "Firebox-DB"
+
+
+def get_payload():
+    username, password, domain = get_data()
+    if len(username) <= 1 or len(password) <= 1:
+        # TODO: make this throw and error
+        result_label.configure(text="Username or password are empty")
+        return -1
+    return f"fw_username={username}&fw_password={password}&fw_domain={domain}&action=fw_logon&fw_logon_type=logon&redirect=&lang=en-US"
+
+
+header = ctk.CTkLabel(app, text="YGW Login App", font=("Arial", 20, "bold"))
+header.pack(pady=20)
+
+username_label = ctk.CTkLabel(app, text="Username:", font=("Arial", 20, "bold"))
+username_label.pack(pady=5)
+
+username_form = ctk.CTkEntry(app, placeholder_text="Enter username")
+username_form.focus()
+username_form.pack(pady=5)
+
+password_label = ctk.CTkLabel(app, text="Password:", font=("Arial", 20, "bold"))
+password_label.pack(pady=5)
+password_form = ctk.CTkEntry(app, placeholder_text="Enter password")
+password_form.pack(pady=5)
+
+result_label = ctk.CTkLabel(app, text="")
+result_label.pack(pady=5)
+
 btn = ctk.CTkButton(app, text="Login", command=login)
 btn.pack(pady=20)
 
-test_btn = ctk.CTkButton(app, text="TEST: logout", command=logout)
-test_btn.pack(pady=40)
-
-result_label = ctk.CTkLabel(app, text="Result will appear here")
-result_label.pack(pady=20)
+footer = ctk.CTkLabel(app, text="Made by Avi Butler", font=("monospace", 10, "bold"))
+footer.pack(pady=20)
 
 
 if __name__ == "__main__":
