@@ -26,7 +26,7 @@ def login():
         response = requests.post(
             "https://10.39.3.1:4100/wgcgi.cgi", data=payload, verify=False
         )
-        if response.status_code == 200 or response.status_code == 301:
+        if response.status_code == 200 or response.status_code == 302:
             result_label.configure(text="User login Successful")
         else:
             result_label.configure(text=response.text[:100])  # Display first 100 chars
