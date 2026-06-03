@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import customtkinter as ctk
-from tkinter import messagebox
+from utils.store_crad import load_crad, store_crad
 from urllib import parse
 import requests
 from dotenv import load_dotenv
@@ -39,44 +39,57 @@ def login():
         print(e)
 
 
+def get_data():
+    # escape the username and password
+    pass
+
+
+def get_payload():
+    username, password = "", ""
+    domain = "Firebox-DB"
+    print("username", username, "password", password)
+    return f"fw_username={username}&fw_password={password}&fw_domain={domain}&action=fw_logon&fw_logon_type=logon&redirect=&lang=en-US"
+
+
 app = ctk.CTk()
 app.title("YGW Login App")
 app.geometry("400x400")
 app.configure(fg_color="green")
 
-
-def get_data():
-    # escape the username and password
-    username = username_form.get()
-    password = password_form.get()
-    username = parse.quote(str(username))
-    password = parse.quote(str(password))
-    return username, password, "Firebox-DB"
-
-
-def get_payload():
-    username, password, domain = get_data()
-    if len(username) <= 1 or len(password) <= 1:
-        # TODO: make this throw and error
-        result_label.configure(text="Username or password are empty")
-        return -1
-    return f"fw_username={username}&fw_password={password}&fw_domain={domain}&action=fw_logon&fw_logon_type=logon&redirect=&lang=en-US"
-
-
 header = ctk.CTkLabel(app, text="YGW Login App", font=("Arial", 20, "bold"))
 header.pack(pady=20)
 
-username_label = ctk.CTkLabel(app, text="Username:", font=("Arial", 20, "bold"))
-username_label.pack(pady=5)
 
-username_form = ctk.CTkEntry(app, placeholder_text="Enter username")
-username_form.focus()
-username_form.pack(pady=5)
+def show_from():
+    # delete_crad()
+    username, password = load_crad()
+    print("username", username, "password", password)
+    if username is None or password is None or username == "" or password == "":
+        username_label = ctk.CTkLabel(app, text="Username:", font=("Arial", 20, "bold"))
+        username_label.pack(pady=5)
 
-password_label = ctk.CTkLabel(app, text="Password:", font=("Arial", 20, "bold"))
-password_label.pack(pady=5)
-password_form = ctk.CTkEntry(app, placeholder_text="Enter password")
-password_form.pack(pady=5)
+        username_form = ctk.CTkEntry(app, placeholder_text="Enter username")
+        username_form.focus()
+        username_form.pack(pady=5)
+
+        password_label = ctk.CTkLabel(app, text="Password:", font=("Arial", 20, "bold"))
+        password_label.pack(pady=5)
+
+        password_form = ctk.CTkEntry(app, placeholder_text="Enter password")
+        password_form.pack(pady=5)
+
+        username = username_form.get()
+        password = password_form.get()
+        username = parse.quote(str(username))
+        password = parse.quote(str(password))
+        store_crad(username, password)
+    else:
+        print("Found creds.json file")
+        print("username", username, "password", password)
+        pass
+
+
+show_from()
 
 result_label = ctk.CTkLabel(app, text="")
 result_label.pack(pady=5)
