@@ -27,7 +27,8 @@ def get_data():
 def get_payload():
     username, password, domain = get_data()
     if len(username) <= 1 or len(password) <= 1:
+        # TODO: make this throw and error
         messagebox.showerror("Error", "Username or password are empty")
-        return
+        return -1
     # FORMAT: fw_username=*******&fw_password=*************fw_domain=Firebox-DB&action=fw_logon&fw_logon_type=logon&redirect=&lang=en-US
     return f"fw_username={username}&fw_password={password}&fw_domain={domain}&action=fw_logon&fw_logon_type=logon&redirect=&lang=en-US"

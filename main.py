@@ -22,6 +22,8 @@ def logout():
 
 def login():
     payload = get_payload()
+    if payload == -1:
+        return
     try:
         response = requests.post(
             "https://10.39.3.1:4100/wgcgi.cgi", data=payload, verify=False
